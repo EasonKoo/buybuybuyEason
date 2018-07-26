@@ -16,11 +16,13 @@ Vue.use(VueRouter)
 // 定义路由规则
 const router = new VueRouter({
    routes :[
-   { path: '/index', component: index }
+   { path: '/index', component: index },
+   //重定向
+   { path: '/', redirect:'/index'}
   
   ]
 })
-Vue.config.productionTip = false
+Vue.config.productionTip = false;
 
 new Vue({
   el:"#app",

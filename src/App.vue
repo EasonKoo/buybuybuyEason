@@ -119,10 +119,45 @@
 </template>
 
 <script>
+  import $ from 'jquery'
   export default {
-    //可以给也可以不给
+    //name可以给也可以不给
+  //声明周期函数,在组件渲染之后被触发;
+    mounted: function () {
+    this.$nextTick(function () {
+      // Code that will run only after the
+      // entire view has been rendered
+     
+        $("#menu2 li a").wrapInner('<span class="out"></span>');
+        $("#menu2 li a").each(function () {
+          $('<span class="over">' + $(this).text() + '</span>').appendTo(this);
+        });
+
+        $("#menu2 li a").hover(function () {
+          $(".out", this).stop().animate({
+            'top': '48px'
+          }, 300); // move down - hide
+          $(".over", this).stop().animate({
+            'top': '0px'
+          }, 300); // move down - show
+
+        }, function () {
+          $(".out", this).stop().animate({
+            'top': '0px'
+          }, 300); // move up - show
+          $(".over", this).stop().animate({
+            'top': '-48px'
+          }, 300); // move up - hide
+        });
+
+    })
   }
+  }
+  
+  
 </script>
 
-<style>
+<style scoped>
+/*标准的的引入其他的css文件的语法*/
+  @import "./assets/statics/lib/hoverNav/css/style.css";
 </style>
