@@ -82,7 +82,7 @@
                 <div class="wrap-box">
                     <ul class="img-list">
                         <li v-for="(itemSon, index) in item.datas" :key="itemSon.artID">
-                            <a href="#/site/goodsinfo/87" class="">
+                            <router-link :to="'/goodsinfo/'+itemSon.artID">
                                 <div class="img-box">
                                     <img v-lazy="itemSon.img_url">
                                 </div>
@@ -97,7 +97,7 @@
                                         </span>
                                     </p>
                                 </div>
-                            </a>
+                            </router-link>
                         </li>
                     </ul>
                 </div>
@@ -107,8 +107,8 @@
     </div>
 </template>
 <script>
-    import axios from "axios";
-    import moment from "moment";
+  
+    
     export default {
         //组件里声明数据
         data: function () {
@@ -119,18 +119,13 @@
                 goodList:[]
             }
         },
-        filters: {
-            cutTime(value) {
-                return moment(value).format("YYYY年MM月DD日")
-            }
-        },
         //可以给也可以不给
         beforeMount: function () {
             this.$nextTick(function () {
                 // Code that will run only after the
                 // entire view has been rendered
                 //console.log("哈哈哈");
-                axios.get("http://47.106.148.205:8899/site/goods/gettopdata/goods")
+                this.axios.get("/site/goods/gettopdata/goods")
                     .then((response) => {
                         //console.log(response);
                         this.cateList = response.data.message.catelist;
@@ -141,7 +136,7 @@
 
 
                     })
-                axios.get("http://47.106.148.205:8899/site/goods/getgoodsgroup")
+                this.axios.get("/site/goods/getgoodsgroup")
                     .then((response) => {
                         //console.log(response);
                         this.goodList = response.data.message;
@@ -156,7 +151,6 @@
 </script>
 <style scoped>
     /* 组件不能设置样式,要在页面上去看了之后才可以知道,然后再给样式 */
-
     .el-carousel img {
         width: 100%;
         height: 100%;

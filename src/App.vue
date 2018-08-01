@@ -11,23 +11,24 @@
             <a target="_blank" href="#"></a>
           </div>
           <div id="menu" class="right-box">
-            <span style="display: none;">
-              <a href="" class="">登录</a>
+            <span v-if="!this.$store.state.isLogin">
+              <router-link to="/login">登录</router-link>
               <strong>|</strong>
               <a href="" class="">注册</a>
               <strong>|</strong>
             </span>
-            <span>
+            <span v-if="this.$store.state.isLogin">
               <a href="" class="">会员中心</a>
               <strong>|</strong>
-              <a>退出</a>
+              <a @click="logout">退出</a>
               <strong>|</strong>
             </span>
-            <a href="" class="">
+            <router-link to="/buyCart">
               <i class="iconfont icon-cart"></i>购物车(
               <span id="shoppingCartCount">
-                <span>4</span>
-              </span>)</a>
+                <span>{{this.$store.getters.total}}</span>
+              </span>)
+            </router-link>
           </div>
         </div>
       </div>
@@ -122,12 +123,12 @@
   import $ from 'jquery'
   export default {
     //name可以给也可以不给
-  //声明周期函数,在组件渲染之后被触发;
+    //声明周期函数,在组件渲染之后被触发;
     mounted: function () {
-    this.$nextTick(function () {
-      // Code that will run only after the
-      // entire view has been rendered
-     
+      this.$nextTick(function () {
+        // Code that will run only after the
+        // entire view has been rendered
+
         $("#menu2 li a").wrapInner('<span class="out"></span>');
         $("#menu2 li a").each(function () {
           $('<span class="over">' + $(this).text() + '</span>').appendTo(this);
@@ -150,14 +151,27 @@
           }, 300); // move up - hide
         });
 
-    })
+      })
+    },
+    methods: {
+      logout() {
+        this.axios.get("site/account/logout")
+          .then((response) => {
+            //console.log(response);
+            if (response.data.message) {
+              this.$store.commit("changeLogin", false)
+              //逻辑是哪里来那你去
+              //编程式的导航
+              this.$router.push("/index")
+            }
+          })
+      }
+    }
   }
-  }
-  
-  
 </script>
 
 <style scoped>
-/*标准的的引入其他的css文件的语法*/
+  /*标准的的引入其他的css文件的语法*/
+
   @import "./assets/statics/lib/hoverNav/css/style.css";
 </style>
