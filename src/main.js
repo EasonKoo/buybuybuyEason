@@ -20,6 +20,7 @@ import goodsinfo from './components/goodsinfo.vue';
 //引入这个组件
 import payOrder from './components/payOrder.vue'
 import login from './components/login.vue'
+import cash from './components/cash.vue'
 
 import buyCart from './components/buyCart.vue'
 //引入路劲
@@ -77,8 +78,8 @@ let buyGood = JSON.parse(window.localStorage.getItem("buyList")) || {};
 const store = new Vuex.Store({
   state: {
     buyGood,
-    isLogin:false,
-    fromPath:"",
+    isLogin: false,
+    fromPath: "",
   },
   mutations: {
     //{goodId:,goodNum:,}info传过来的格式
@@ -100,8 +101,8 @@ const store = new Vuex.Store({
       //
       Vue.delete(state.buyGood, id)
     },
-    changeLogin(state,isLogin){
-      state.isLogin=isLogin;
+    changeLogin(state, isLogin) {
+      state.isLogin = isLogin;
     }
   },
   getters: {
@@ -137,12 +138,16 @@ const router = new VueRouter({
       component: buyCart
     },
     {
-      path: '/payOrder',
+      path: '/payOrder/:ids',
       component: payOrder
     },
-    {
+     {
       path: '/login',
       component: login
+    },
+    {
+      path: '/cash/:id',
+      component: cash
     },
 
   ]
@@ -150,25 +155,25 @@ const router = new VueRouter({
 //导航守卫
 router.beforeEach((to, from, next) => {
   //记录是从哪里过来的
-  store.state.fromPath=from.path;
-  console.log(from.path);
- if(to.path=="/payOrder"){
-   //调用接口,验证是否登录,没登录的话达到登录页,登录了的话就可以登录
-   axios.get("site/account/islogin")
-   .then((response)=>{
-     if(response.data.code=="nologin"){
-       //没登录
-       next("/login")
-     }else{
-       //登录成功
-       next()
-     }
-     
-   })
- }else{
-   next()
- }
- 
+  store.state.fromPath = from.path;
+  //console.log(from.path);
+  if (to.path.indexOf("/payOrder")!=-1) {
+    //调用接口,验证是否登录,没登录的话达到登录页,登录了的话就可以登录
+    axios.get("site/account/islogin")
+      .then((response) => {
+        if (response.data.code == "nologin") {
+          //没登录
+          next("/login")
+        } else {
+          //登录成功
+          next()
+        }
+
+      })
+  } else {
+    next()
+  }
+
 
 
 
@@ -180,6 +185,22 @@ new Vue({
   router,
   render: h => h(App),
   store, //挂载vue上
+  //vue组件实例化,最先开始创建并渲染的组件
+  beforeCreate() {
+    //console.log("在创建之前");
+    axios.get("site/account/islogin")
+      .then((response) => {
+        //console.log(response);
+        //如果登录成功,改变vuex里面的值
+        if (response.data.code == "logined") {
+          store.state.isLogin = true;
+        }
+      })
+
+  },
+  created() {
+    // console.log("创建了")
+  }
 
   // 挂载路由规则 传入这个对象
 })

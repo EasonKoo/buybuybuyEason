@@ -106,9 +106,11 @@
                     <div class="cart-foot clearfix">
                         <div class="right-box">
                             <button class="button" onclick="javascript:location.href='/index.html';">继续购物</button>
-                            <router-link to="/payOrder">
+                            <!-- <router-link to="/payOrder">
                                 <button class="submit" onclick="formSubmit(this, '/', '/shopping.html');">立即结算</button>
-                            </router-link>
+                            </router-link> -->
+                            <!-- 不能直接跳转页面,要带值过去吧 -->
+                            <button class="submit" @click="formSubmit">立即结算</button>
                         </div>
                     </div>
                     <!--购物车底部-->
@@ -120,9 +122,9 @@
 </template>
 <script>
     //引入组件
-     import  numControl from "./buyCart-component.vue";
+    import numControl from "./buyCart-component.vue";
     export default {
-      
+
         data: function () {
             return {
                 cartList: [],
@@ -149,7 +151,7 @@
                         v.isSelected = true;
                     });
                     this.cartList = response.data.message
-                    console.log(this.cartList);
+                   // console.log(this.cartList);
 
                 })
         },
@@ -205,19 +207,38 @@
                     });
                 });
             },
-            change(num,index){
+            change(num, index) {
                 //可以获取数量和索引
-                console.log(num,index);
+                console.log(num, index);
                 //先修改仓库的值
-                this.$store.commit("updateData",{
-                    goodId:this.cartList[index].id,
-                    goodNum:num,
+                this.$store.commit("updateData", {
+                    goodId: this.cartList[index].id,
+                    goodNum: num,
                 })
-                
+
+            },
+            formSubmit() {
+                //获取被选中的id
+                let ids = "";
+                this.cartList.forEach((v) => {
+                    if (v.isSelected == true) {
+                        ids += v.id;
+                        ids += ","
+                    }
+                })
+                if(ids==""){
+                    this.$Message.error("你倒是选一个啊")
+                    return;
+                }else{
+
+                ids = ids.slice(0, -1)       
+                //console.log(ids);
+                this.$router.push("/payOrder/"+ids)
+                }
             }
-           
+
         },
-        components:{
+        components: {
             numControl
         }
     }
@@ -226,32 +247,33 @@
     .el-message-box__message p {
         text-align: center;
     }
-    #count{
-        display:flex;
-        span{
-            width:30px;
-            height:30px;
-            border:1px solid #000;
-            text-align:center;
-            line-height:30px;
-            font-size:18px;
-            cursor:pointer;
-            &:first-child{
-                border-top-left-radius:5px;
-                border-bottom-left-radius:5px;
+
+    #count {
+        display: flex;
+        span {
+            width: 30px;
+            height: 30px;
+            border: 1px solid #000;
+            text-align: center;
+            line-height: 30px;
+            font-size: 18px;
+            cursor: pointer;
+            &:first-child {
+                border-top-left-radius: 5px;
+                border-bottom-left-radius: 5px;
 
             }
-            &:last-child{
-                border-top-right-radius:5px;
-                border-bottom-right-radius:5px;
+            &:last-child {
+                border-top-right-radius: 5px;
+                border-bottom-right-radius: 5px;
 
             }
         }
-        input{
-            width:80px;
-            border:1px solid #000;
+        input {
+            width: 80px;
+            border: 1px solid #000;
             text-align: center;
-            margin:0px -1px;
+            margin: 0px -1px;
         }
     }
 </style>
